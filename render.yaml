@@ -21,5 +21,4 @@ services:
 databases:
   - name: go-wallet-db
     databaseName: walletdb
-    user: postgres
     plan: free
