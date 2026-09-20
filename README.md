@@ -23,6 +23,14 @@ cp .env.example .env   # set DATABASE_URL, PORT
 go run ./cmd
 ```
 
+### Run with Docker Compose
+
+```bash
+docker compose up --build
+```
+
+Starts the app (port `8080`) and a Postgres container together; `DATABASE_URL` is preset in `docker-compose.yml` to point at the `db` service.
+
 ## Env vars
 
 | Var | Default |
@@ -39,12 +47,16 @@ go run ./cmd
 | GET | `/wallets/:id` | get wallet |
 | POST | `/wallets/:id/deposit` | deposit (`{"amount": 10.5}`) |
 | POST | `/wallets/:id/withDraw` | withdraw (`{"amount": 10.5}`) |
-| POST | `/wallets/:id` | delete wallet |
+| DELETE | `/wallets/:id` | delete wallet |
 
-> Known bug: in `cmd/main.go` the deposit route is wired to `CreateWallet` instead of `Deposit`, and delete uses `POST` instead of `DELETE`.
+Requests for each endpoint are in `requests.http` (VS Code REST Client / IntelliJ HTTP client).
 
 ## Test
 
 ```bash
 go test ./...
 ```
+
+## CI
+
+`.github/workflow/main.yaml` runs `go vet` and `go test -race` on push/PR to `main`, and builds/pushes a Docker image to GHCR on version tags (`v*`).
