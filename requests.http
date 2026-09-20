@@ -1,0 +1,34 @@
+@baseUrl = http://localhost:8080
+@walletId = YOUR_WALLET_ID
+### Health check
+GET {{baseUrl}}/health
+
+### Create wallet
+POST {{baseUrl}}/wallets
+Content-Type: application/json
+
+{
+  "user_id": "user-124"
+}
+
+### Get wallet
+GET {{baseUrl}}/wallets/{{walletId}}
+
+### Deposit
+POST {{baseUrl}}/wallets/{{walletId}}/deposit
+Content-Type: application/json
+
+{
+  "amount": 1000
+}
+
+### Withdraw
+POST {{baseUrl}}/wallets/{{walletId}}/withDraw
+Content-Type: application/json
+
+{
+  "amount": 50
+}
+
+### Delete wallet
+DELETE {{baseUrl}}/wallets/{{walletId}}

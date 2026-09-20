@@ -100,9 +100,12 @@ func (ws *WalletService) WithDraw(ctx context.Context, id string, amount float64
 	if err != nil {
 		return nil, err
 	}
-	newBalance := wallet.Balance - amount
 	if wallet.Balance < amount {
 		return nil, fmt.Errorf("insufficient balance: have %.2f, need %.2f", wallet.Balance, amount)
+	}
+	newBalance := wallet.Balance - amount
+	if err := ws.repo.UpdateBalance(ctx, id, newBalance); err != nil {
+		return nil, fmt.Errorf("Update balance: %w", err)
 	}
 	wallet.Balance = newBalance
 	return wallet, nil

@@ -31,6 +31,8 @@ FROM gcr.io/distroless/static-debian12:nonroot
 # Distroless ships no CA bundle; without this, outbound TLS (e.g. Postgres SSL) fails.
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs
 
+COPY --from=builder /app/server /server
+
 EXPOSE 8080
 
 # nonroot base image already runs this as an unprivileged user.

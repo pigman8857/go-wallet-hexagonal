@@ -1,0 +1,59 @@
+services:
+  app:
+    container_name: wallet_hex_app
+    build: .
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      # host=db: resolves via Compose's internal DNS to the db service below.
+      DATABASE_URL: "host=db user=postgres password=postgres dbname=walletdb port=5432 sslmode=disable TimeZone=Asia/Bangkok"
+      PORT: "8080"
+      # release: turns off Gin's debug logging/warnings, meant for production.
+      GIN_MODE: "release"
+    depends_on:
+      db:
+        # Waits for db's healthcheck (pg_isready), not just container start,
+        # so the app doesn't try to connect before Postgres accepts connections.
+        condition: service_healthy
+    healthcheck:
+      # BUG: distroless/static (see Dockerfile) has no wget/shell at all, so this
+      # exec will always fail with "executable file not found". Also "--tries"
+      # here has no numeric value — "--spider" is consumed as its argument, so
+      # the --spider flag itself never applies. Needs a different approach
+      # (e.g. drop this healthcheck, or have the Go binary self-check some other way).
+      test: ["CMD", "wget", "--no-verbose", "--tries", "--spider", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    networks:
+      - go-wallet-net
+
+  db:
+    container_name: wallet_hex_db
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: walletdb
+    ports:
+      - "5432:5432"
+    volumes:
+      # Named volume persists Postgres data across container recreation.
+      -  go-wallet-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      timeout: 3s
+      retries: 10
+    networks:
+      - go-wallet-net
+
+networks:
+  # Isolated bridge network so app/db reach each other by service name only.
+  go-wallet-net:
+    driver: bridge
+
+volumes:
+  go-wallet-data:

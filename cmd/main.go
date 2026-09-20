@@ -44,9 +44,9 @@ func main() {
 	{
 		wallets.POST("", walletHdr.CreateWallet)
 		wallets.GET("/:id", walletHdr.GetWallet)
-		wallets.POST("/:id/deposit", walletHdr.CreateWallet)
+		wallets.POST("/:id/deposit", walletHdr.Deposit)
 		wallets.POST("/:id/withDraw", walletHdr.WithDraw)
-		wallets.POST("/:id", walletHdr.DeleteWallet)
+		wallets.DELETE("/:id", walletHdr.DeleteWallet)
 	}
 
 	log.Printf("Server starting on: %s\n", port)
