@@ -10,7 +10,7 @@ on:
 
 env:
   GO_VERSION: "1.27"
-  IMAGE_NAME: "hexagonal-app:latest"
+  IMAGE_NAME: "hexagonal-app"
 
 jobs:
   # job 1: test
