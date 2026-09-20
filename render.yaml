@@ -6,7 +6,7 @@ services:
     branch: main
     dockerfilePath: ./Dockerfile
     dockerContext:  .
-    # plan: free
+    plan: free
     healthCheckPath: /health
     envVars:
       - key: PORT
